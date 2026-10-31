@@ -7,20 +7,20 @@
 <style>
 /* Layout: página de tienda en una columna con secciones en banda; tejido andino como única franja decorativa; chat flotante abajo a la derecha */
 :root{
-  --bg:#F6F7F4; --surface:#FFFFFF; --ink:#1E2740; --muted:#5A6275;
-  --accent:#A8322B; --accent-ink:#FFFFFF; --green:#2C6A57; --line:#DDE0E4;
-  --bubble-bot:#EEF0F3; --bubble-user:#1E2740; --bubble-user-ink:#FFFFFF;
+  --bg:#0B0B1A; --surface:#14142B; --ink:#F2F2FF; --muted:#B8B8E0;
+  --accent:#FF2BD6; --accent-ink:#0B0B1A; --green:#39FF14; --line:#3A3A70;
+  --bubble-bot:#1F1F45; --bubble-user:#00F0FF; --bubble-user-ink:#0B0B1A; color-scheme:dark;
   --f-display:"Young Serif", Georgia, "Times New Roman", serif;
   --f-body:"Source Sans 3", "Segoe UI", Roboto, Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#121621; --surface:#1A2030; --ink:#E9ECF2; --muted:#A3AABA;
-  --accent:#E0594F; --accent-ink:#1A0C0B; --green:#5BB596; --line:#2D3446;
-  --bubble-bot:#242B3D; --bubble-user:#E9ECF2; --bubble-user-ink:#121621; color-scheme:dark}}
+  --bg:#0B0B1A; --surface:#14142B; --ink:#F2F2FF; --muted:#B8B8E0;
+  --accent:#FF2BD6; --accent-ink:#0B0B1A; --green:#39FF14; --line:#3A3A70;
+  --bubble-bot:#1F1F45; --bubble-user:#00F0FF; --bubble-user-ink:#0B0B1A; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#121621; --surface:#1A2030; --ink:#E9ECF2; --muted:#A3AABA;
-  --accent:#E0594F; --accent-ink:#1A0C0B; --green:#5BB596; --line:#2D3446;
-  --bubble-bot:#242B3D; --bubble-user:#E9ECF2; --bubble-user-ink:#121621; color-scheme:dark}
+  --bg:#0B0B1A; --surface:#14142B; --ink:#F2F2FF; --muted:#B8B8E0;
+  --accent:#FF2BD6; --accent-ink:#0B0B1A; --green:#39FF14; --line:#3A3A70;
+  --bubble-bot:#1F1F45; --bubble-user:#00F0FF; --bubble-user-ink:#0B0B1A; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
 .wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -93,6 +93,22 @@ footer .wrap{padding-block:28px}
 }
 @media (max-width:460px){.grid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* ===== Tema fosforescente ===== */
+h1,h2{color:#00F0FF;text-shadow:0 0 8px rgba(0,240,255,.7),0 0 22px rgba(0,240,255,.35)}
+h3{color:#FFF01F;text-shadow:0 0 6px rgba(255,240,31,.5)}
+a{text-shadow:0 0 6px rgba(255,43,214,.5)}
+.btn{box-shadow:0 0 10px rgba(255,43,214,.7),0 0 24px rgba(255,43,214,.35)}
+.demo{background:linear-gradient(90deg,#FF2BD6,#00F0FF,#39FF14);color:#0B0B1A;font-weight:700}
+.fab{background:#39FF14!important;color:#0B0B1A!important;box-shadow:0 0 12px #39FF14,0 0 30px rgba(57,255,20,.6)!important;animation:neonPulso 2s ease-in-out infinite}
+@keyframes neonPulso{0%,100%{box-shadow:0 0 12px #39FF14,0 0 30px rgba(57,255,20,.6)}50%{box-shadow:0 0 20px #39FF14,0 0 48px rgba(57,255,20,.9)}}
+.chat{border:2px solid #00F0FF!important;box-shadow:0 0 14px rgba(0,240,255,.7),0 0 40px rgba(0,240,255,.3)!important}
+.chat-head{background:linear-gradient(90deg,#FF2BD6,#8A2BFF)!important;color:#FFFFFF!important}
+.m.bot{border:1px solid #39FF14;box-shadow:0 0 6px rgba(57,255,20,.35)}
+.m.user{box-shadow:0 0 8px rgba(0,240,255,.6)}
+.chat form button{box-shadow:0 0 8px rgba(255,43,214,.7)}
+.chat input:focus{outline:none;border-color:#00F0FF;box-shadow:0 0 8px rgba(0,240,255,.6)}
+@media (prefers-reduced-motion:reduce){.fab{animation:none}}
 </style>
 </head><body>
 
