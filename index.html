@@ -289,6 +289,17 @@ function leadInput(v){const s=steps[lead.step];
 async function finish(d){
  const resumen=`Nuevo contacto desde la web de Librerías Andinas\nNombre: ${d.nombre}\nTeléfono: ${d.telefono}\nCorreo: ${d.correo}\nConsulta: ${d.consulta}`;
  add("Gracias, "+d.nombre+". Estoy enviando tus datos…");
+ // 0) Registro en la hoja Pedidos a través del agente de n8n
+ let n8nOk=false;
+ try{
+  const msg="REGISTRO DESDE EL FORMULARIO WEB. Usa ahora la herramienta registrar_pedido con tipo = \"Consulta\" y estos datos, sin pedir confirmación: "+
+   "nombre: "+d.nombre+"; correo: "+d.correo+"; telefono: "+d.telefono+"; titulo: "+d.consulta+". Luego responde solo con una frase corta confirmando el registro.";
+  const r=await fetch(N8N_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({action:"sendMessage",sessionId:SESSION_ID+"-form",chatInput:msg})});
+  n8nOk=r.ok;
+  if(r.ok){const data=await r.json();console.log("Respuesta n8n (registro):",data)}
+ }catch(e){console.error("Error n8n (registro):",e)}
+ add(n8nOk?"✅ Tus datos quedaron registrados.":"No se pudo registrar tus datos en el sistema en este momento.");
  // 1) Correo vía FormSubmit
  let mailOk=false;
  try{
