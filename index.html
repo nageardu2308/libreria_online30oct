@@ -66,6 +66,9 @@ footer .wrap{padding-block:28px}
 .tag{font-size:12px;font-weight:700;background:var(--bubble-bot);color:var(--muted);border-radius:4px;padding:1px 6px;margin-left:4px}
 
 /* Chat */
+.fab{font-size:30px!important;line-height:1;width:62px;height:62px;padding:0!important;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.fab:hover{transform:scale(1.08)}
+.m.typing{opacity:.7;font-style:italic}
 .fab{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 20px;font:700 16px var(--f-body);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .chat{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:31;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100vh - 120px));background:var(--surface);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;box-shadow:0 12px 32px rgba(0,0,0,.25);overflow:hidden}
 .chat-head{background:var(--ink);color:var(--bg);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
@@ -178,10 +181,10 @@ footer .wrap{padding-block:28px}
 
 <footer><div class="wrap">© 2026 Librerías Andinas · Sitio de demostración</div></footer>
 
-<button class="fab" type="button" id="fab" data-open-chat aria-controls="chat">Asistente</button>
+<button class="fab" type="button" id="fab" data-open-chat aria-controls="chat" aria-label="Abrir asistente" title="Asistente de la librería">🤖</button>
 
 <div class="chat" id="chat" role="dialog" aria-label="Asistente de Librerías Andinas" hidden>
-  <div class="chat-head"><strong>Asistente Andino</strong><button type="button" id="close" aria-label="Cerrar">×</button></div>
+  <div class="chat-head"><strong>🤖 Asistente Andino</strong><button type="button" id="close" aria-label="Cerrar">×</button></div>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <form id="f"><input id="inp" autocomplete="off" placeholder="Escribe tu pregunta…" aria-label="Mensaje"><button type="submit">Enviar</button></form>
 </div>
@@ -191,6 +194,11 @@ footer .wrap{padding-block:28px}
 const WHATSAPP = "51964168185";
 const EMAIL = "nageardu2308@gmail.com";
 const FORM_ENDPOINT = "https://formsubmit.co/ajax/" + EMAIL;
+/* Agente de IA en n8n (consulta y venta de libros) */
+const N8N_URL = "https://nageardu2308anita.app.n8n.cloud/webhook/b7c1e2d3-1111-4222-8333-444455556666/chat";
+let SESSION_ID;
+try{SESSION_ID=sessionStorage.getItem("n8n_session")||crypto.randomUUID();sessionStorage.setItem("n8n_session",SESSION_ID)}
+catch(e){SESSION_ID="s-"+Date.now()+"-"+Math.random().toString(36).slice(2)}
 
 /* ===== 10 PREGUNTAS (respuestas de ejemplo) ===== */
 const FAQ = [
@@ -237,6 +245,24 @@ function norm(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
 function match(t){const n=norm(t);let best=null,score=0;
  FAQ.forEach(f=>{const s=f.k.filter(k=>n.includes(norm(k))).length;if(s>score){score=s;best=f}});return best}
 
+async function askN8n(texto){
+ const t=add("Escribiendo…");t.classList.add("typing");
+ try{
+  const r=await fetch(N8N_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({action:"sendMessage",sessionId:SESSION_ID,chatInput:texto})});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  const data=await r.json();
+  const out=(Array.isArray(data)?data[0]:data)||{};
+  t.remove();
+  add(out.output||out.text||"No recibí respuesta del asistente.");
+ }catch(e){
+  t.remove();
+  add("No pude conectar con el asistente en este momento. Elige una pregunta frecuente o deja tus datos.");
+  chips([["Ver preguntas frecuentes",menu],["Dejar mis datos",startLead]]);
+  console.error("Error n8n:",e);
+ }
+}
+
 function startLead(){lead={step:0,data:{}};add("Perfecto. Te pediré 4 datos para que un asesor te contacte.");add(steps[0].ask)}
 function leadInput(v){const s=steps[lead.step];
  if(s.ok&&!s.ok(v)){add(s.err);return}
@@ -265,13 +291,12 @@ async function finish(d){
 
 $("f").addEventListener("submit",e=>{e.preventDefault();const v=inp.value.trim();if(!v)return;inp.value="";add(v,"user");
  if(lead){leadInput(v);return}
- const f=match(v);
- if(f){answer(f)}else{add("No tengo una respuesta para eso. Elige una pregunta o deja tus datos y un asesor te responde.");menu()}
+ askN8n(v);
 });
 
 let started=false;
 function openChat(withLead){chat.hidden=false;
- if(!started){started=true;add("¡Hola! Soy el asistente de Librerías Andinas. Elige una pregunta o escribe la tuya.");menu()}
+ if(!started){started=true;add("¡Hola! 🤖 Soy el asistente de Librerías Andinas. Escríbeme el libro, autor o categoría que buscas y te digo precio y stock, o te ayudo a comprarlo. También puedes elegir una pregunta frecuente:");menu()}
  if(withLead&&!lead)startLead();
  inp.focus()}
 document.querySelectorAll("[data-open-chat]").forEach(b=>b.addEventListener("click",()=>{if(b.id==="fab"&&!chat.hidden){chat.hidden=true;return}openChat(b.hasAttribute("data-lead"))}));
